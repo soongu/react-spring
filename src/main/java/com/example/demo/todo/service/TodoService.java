@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +28,21 @@ public class TodoService {
 
     public List<TodoEntity> retrieve(final String userId) {
         return todoRepository.findByUserId(userId);
+    }
+
+    public List<TodoEntity> update(final TodoEntity entity) {
+        validate(entity);
+
+        final Optional<TodoEntity> original = todoRepository.findById(entity.getId());
+
+        original.ifPresent(todo -> {
+            todo.setTitle(entity.getTitle());
+            todo.setDone(entity.isDone());
+
+            todoRepository.save(entity);
+        });
+
+        return retrieve(entity.getUserId());
     }
 
     private static void validate(final TodoEntity entity) {
