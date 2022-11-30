@@ -57,6 +57,8 @@ public class TodoService {
         return retrieve(entity.getUserId());
     }
 
+
+
     private static void validate(final TodoEntity entity) {
         if (entity == null) {
             log.warn("Entity cannot be null.");
