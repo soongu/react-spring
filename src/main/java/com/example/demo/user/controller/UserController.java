@@ -1,5 +1,6 @@
 package com.example.demo.user.controller;
 
+import com.example.demo.security.TokenProvider;
 import com.example.demo.todo.dto.ResponseDTO;
 import com.example.demo.user.dto.UserDTO;
 import com.example.demo.user.entity.UserEntity;
@@ -19,6 +20,7 @@ import java.util.UUID;
 public class UserController {
 
     private final UserService userService;
+    private final TokenProvider tokenProvider;
 
     @PostMapping("/signup")
     public ResponseEntity<?> register(@RequestBody UserDTO userDTO) {
@@ -53,9 +55,13 @@ public class UserController {
         UserEntity user = userService.getByCredentials(userDTO.getEmail(), userDTO.getPassword());
 
         if (user != null) {
+            // 토큰 생성
+            final String token = tokenProvider.create(user);
+
             final UserDTO responseUserDTO = UserDTO.builder()
                     .email(user.getEmail())
                     .id(user.getId())
+                    .token(token) // 토큰 추가
                     .build();
             return ResponseEntity.ok().body(responseUserDTO);
         } else {
