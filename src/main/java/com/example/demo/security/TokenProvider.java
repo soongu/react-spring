@@ -47,7 +47,7 @@ public class TokenProvider {
              그 중 우리는 userId가 필요하므로 getBody를 부름
          */
         Claims claims = Jwts.parserBuilder()
-                .setSigningKey(SECRET_KEY)
+                .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .build()
                 .parseClaimsJws(token)
                 .getBody();

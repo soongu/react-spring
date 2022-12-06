@@ -16,7 +16,6 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/auth")
-@CrossOrigin
 public class UserController {
 
     private final UserService userService;
