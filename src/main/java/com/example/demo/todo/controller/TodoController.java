@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -22,6 +23,7 @@ public class TodoController {
 
     @PostMapping
     public ResponseEntity<?> createTodo(@RequestBody TodoDTO dto) {
+        log.info("Todo POST request!! - {}", dto);
         try {
             String temporaryUserId = "temporary-user";
 
@@ -29,7 +31,7 @@ public class TodoController {
             TodoEntity entity = TodoDTO.toEntity(dto);
 
             // 2. 생성당시에는 id가 없어야 하므로 null로 초기화한다.
-            entity.setId(null);
+            entity.setId(UUID.randomUUID().toString());
 
             // 3. 임시 사용자 아이디를 설정한다.
             entity.setUserId(temporaryUserId);
@@ -44,6 +46,7 @@ public class TodoController {
 
             return ResponseEntity.ok().body(response);
         } catch (Exception e) {
+            e.printStackTrace();
             String error = e.getMessage();
             ResponseDTO<TodoDTO> response = ResponseDTO.<TodoDTO>builder().error(error).build();
             return ResponseEntity.badRequest().body(response);
@@ -52,6 +55,7 @@ public class TodoController {
 
     @GetMapping
     public ResponseEntity<?> retrieveTodoList() {
+        log.info("Todo GET request!!");
         String temporaryUserId = "temporary-user";
 
         List<TodoEntity> entities = todoService.retrieve(temporaryUserId);
@@ -66,6 +70,7 @@ public class TodoController {
 
     @PutMapping
     public ResponseEntity<?> updateTodo(@RequestBody TodoDTO dto) {
+        log.info("Todo PUT request!! - {}", dto);
         String temporaryUserId = "temporary-user";
 
         TodoEntity entity = TodoDTO.toEntity(dto);

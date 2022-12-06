@@ -39,7 +39,7 @@ public class TodoService {
             todo.setTitle(entity.getTitle());
             todo.setDone(entity.isDone());
 
-            todoRepository.save(entity);
+            todoRepository.modify(entity);
         });
 
         return retrieve(entity.getUserId());

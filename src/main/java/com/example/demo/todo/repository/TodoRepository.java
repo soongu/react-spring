@@ -1,13 +1,21 @@
 package com.example.demo.todo.repository;
 
 import com.example.demo.todo.entity.TodoEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+import java.util.Optional;
 
-@Repository
-public interface TodoRepository extends JpaRepository<TodoEntity, String> {
+@Mapper
+public interface TodoRepository {
 
     List<TodoEntity> findByUserId(String userId);
+
+    void save(TodoEntity entity);
+
+    Optional<TodoEntity> findById(String id);
+
+    void delete(TodoEntity entity);
+
+    void modify(TodoEntity entity);
 }

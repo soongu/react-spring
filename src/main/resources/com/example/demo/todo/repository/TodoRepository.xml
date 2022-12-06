@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.todo.repository.TodoRepository">
+
+    <select id="findByUserId" resultType="com.example.demo.todo.entity.TodoEntity">
+        SELECT id, userId, title, done
+        FROM tbl_todo
+        WHERE userId=#{userId}
+    </select>
+
+    <select id="findById" resultType="com.example.demo.todo.entity.TodoEntity">
+        SELECT id, userId, title, done
+        FROM tbl_todo
+        WHERE id=#{id}
+    </select>
+
+    <insert id="save">
+        INSERT INTO tbl_todo
+            (id, userId, title, done)
+        VALUES
+            (#{id}, #{userId}, #{title}, #{done})
+    </insert>
+
+    <update id="modify">
+        UPDATE tbl_todo
+        SET title=#{title}, done=#{done}
+        WHERE id=#{id}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM tbl_todo
+        WHERE id=#{id}
+    </delete>
+</mapper>
