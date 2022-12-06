@@ -53,9 +53,9 @@ public class UserController {
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticate(@RequestBody UserDTO userDTO) {
-        UserEntity user = userService.getByCredentials(userDTO.getEmail(), userDTO.getPassword(), encoder);
+        try {
+            UserEntity user = userService.getByCredentials(userDTO.getEmail(), userDTO.getPassword(), encoder);
 
-        if (user != null) {
             // 토큰 생성
             final String token = tokenProvider.create(user);
 
@@ -65,11 +65,13 @@ public class UserController {
                     .token(token) // 토큰 추가
                     .build();
             return ResponseEntity.ok().body(responseUserDTO);
-        } else {
+
+        } catch (Exception e) {
             ResponseDTO<Object> responseDTO = ResponseDTO.builder()
-                    .error("Login failed")
+                    .error(e.getMessage())
                     .build();
             return ResponseEntity.badRequest().body(responseDTO);
         }
+
     }
 }
