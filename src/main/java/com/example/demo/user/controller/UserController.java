@@ -8,6 +8,7 @@ import com.example.demo.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -20,6 +21,7 @@ public class UserController {
 
     private final UserService userService;
     private final TokenProvider tokenProvider;
+    private final BCryptPasswordEncoder encoder;
 
     @PostMapping("/signup")
     public ResponseEntity<?> register(@RequestBody UserDTO userDTO) {
@@ -29,7 +31,7 @@ public class UserController {
                     .id(UUID.randomUUID().toString())
                     .email(userDTO.getEmail())
                     .username(userDTO.getUsername())
-                    .password(userDTO.getPassword())
+                    .password(encoder.encode(userDTO.getPassword()))
                     .build();
 
             log.info("/auth/signup - {}", user);
@@ -51,7 +53,7 @@ public class UserController {
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticate(@RequestBody UserDTO userDTO) {
-        UserEntity user = userService.getByCredentials(userDTO.getEmail(), userDTO.getPassword());
+        UserEntity user = userService.getByCredentials(userDTO.getEmail(), userDTO.getPassword(), encoder);
 
         if (user != null) {
             // 토큰 생성
