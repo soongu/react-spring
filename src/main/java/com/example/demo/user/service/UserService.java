@@ -42,6 +42,11 @@ public class UserService {
         }
 
     }
+
+    // 이메일 중복확인
+    public boolean isDuplicate(String email) {
+        return userRepository.existsByEmail(email);
+    }
 }
 
 
