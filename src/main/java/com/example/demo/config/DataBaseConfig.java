@@ -28,16 +28,16 @@ public class DataBaseConfig {
 
 
     // DB접속 정보 설정 (DataSource설정)
-    @Bean
-    public DataSource dataSource() {
-
-        HikariConfig config = new HikariConfig();
-
-        config.setUsername(username);
-        config.setPassword(password);
-        config.setJdbcUrl(url);
-        config.setDriverClassName("org.mariadb.jdbc.Driver");
-
-        return new HikariDataSource(config);
-    }
+//    @Bean
+//    public DataSource dataSource() {
+//
+//        HikariConfig config = new HikariConfig();
+//
+//        config.setUsername(username);
+//        config.setPassword(password);
+//        config.setJdbcUrl(url);
+//        config.setDriverClassName("org.mariadb.jdbc.Driver");
+//
+//        return new HikariDataSource(config);
+//    }
 }
