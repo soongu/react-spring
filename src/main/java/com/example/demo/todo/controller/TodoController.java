@@ -68,11 +68,12 @@ public class TodoController {
 
 
     @PutMapping
-    public ResponseEntity<?> updateTodo(@AuthenticationPrincipal String userId, @RequestBody TodoDTO dto) {
+    public ResponseEntity<?> updateTodo(
+            @AuthenticationPrincipal String userId,
+            @RequestBody TodoDTO dto) {
         log.info("Todo PUT request!! - {}", dto);
 
         TodoEntity entity = TodoDTO.toEntity(dto);
-
         entity.setUserId(userId);
 
         List<TodoEntity> entities = todoService.update(entity);
