@@ -1,0 +1,7 @@
+server:
+  port: 80
+spring:
+  datasource:
+    url: jdbc:mariadb://todo-backend-db.cbcszxd0fody.ap-northeast-2.rds.amazonaws.com:3306/demodb
+    username: hong
+    password: hong1234!
