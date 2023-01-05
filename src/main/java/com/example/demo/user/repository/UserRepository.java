@@ -13,4 +13,6 @@ public interface UserRepository {
     UserEntity findByEmailAndPassword(String email, String password);
 
     boolean save(UserEntity userEntity);
+
+    String getProfile(String userId);
 }

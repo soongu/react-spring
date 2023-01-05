@@ -24,4 +24,5 @@ create table todotodo.tbl_todo
             on delete cascade
 );
 
-
+alter table tbl_user
+    add profileImg varchar(255) null;

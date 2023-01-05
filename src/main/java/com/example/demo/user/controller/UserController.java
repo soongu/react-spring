@@ -9,12 +9,19 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.UUID;
 
 @RestController
@@ -52,19 +59,21 @@ public class UserController {
                 String uniqueFileName = UUID.randomUUID().toString() + "_" + originalFilename;
                 File uploadFile = new File(uploadPath + "/" + uniqueFileName);
                 profileImg.transferTo(uploadFile);
+
+                user.setProfileImg(uniqueFileName);
             }
 
-//            UserEntity registeredUser = userService.create(user);
-//
-//            UserDTO responseUserDTO = UserDTO.builder()
-//                    .email(registeredUser.getEmail())
-//                    .id(registeredUser.getId())
-//                    .username(registeredUser.getUsername())
-//                    .build();
-//
-//            return ResponseEntity.ok().body(responseUserDTO);
+            UserEntity registeredUser = userService.create(user);
 
-            return null;
+            UserDTO responseUserDTO = UserDTO.builder()
+                    .email(registeredUser.getEmail())
+                    .id(registeredUser.getId())
+                    .username(registeredUser.getUsername())
+                    .profileImg(registeredUser.getProfileImg())
+                    .build();
+
+            return ResponseEntity.ok().body(responseUserDTO);
+
 
         } catch (Exception e) {
             ResponseDTO<Object> responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
@@ -101,6 +110,37 @@ public class UserController {
         boolean flag = userService.isDuplicate(email);
         log.info("{} 중복여부?? - {}", email, flag);
         return ResponseEntity.ok().body(flag);
+    }
+
+    @GetMapping("/load-profile")
+    public ResponseEntity<byte[]> loadFile(@AuthenticationPrincipal String userId) throws IOException {
+
+        log.info("/loadFile GET - {}", userId);
+
+        // 클라이언트가 요청하는 파일의 진짜 바이트 데이터를 갖다줘야 함.
+
+        //  요청 파일명 찾아서 file객체로 포장
+        String fileName = userService.findProfile(userId);
+        File f = new File(uploadPath + "/" + fileName);
+
+        if (!f.exists()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        String formatName = fileName.substring(fileName.lastIndexOf(".") + 1);
+
+        MediaType mediaType = MediaUtils.getMediaType(formatName);
+
+        // 응답헤더에 미디어 타입 설정
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(mediaType);
+
+        //  파일 순수데이터 바이트배열에 저장.
+        byte[] rawData = FileCopyUtils.copyToByteArray(f);
+
+        return new ResponseEntity<>(rawData, headers, HttpStatus.OK); // 클라이언트에 파일 데이터 응답
+
+
     }
 
 }
