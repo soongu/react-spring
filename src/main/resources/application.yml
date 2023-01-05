@@ -1,7 +1,13 @@
 server:
-  port: 80
+  port: 8181
 spring:
   datasource:
-    url: jdbc:mariadb://todo-backend-db.cbcszxd0fody.ap-northeast-2.rds.amazonaws.com:3306/demodb
-    username: hong
-    password: hong1234!
+    url: jdbc:mariadb://localhost:3307/todotodo
+    username: root
+    password: mariadb
+  servlet:
+    multipart:
+      max-file-size: 3MB
+      max-request-size: 3MB
+upload:
+  path: D:/upload

@@ -7,10 +7,14 @@ import com.example.demo.user.entity.UserEntity;
 import com.example.demo.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.util.UUID;
 
 @RestController
@@ -23,8 +27,13 @@ public class UserController {
     private final TokenProvider tokenProvider;
     private final BCryptPasswordEncoder encoder;
 
-    @PostMapping("/signup")
-    public ResponseEntity<?> register(@RequestBody UserDTO userDTO) {
+    @Value("${upload.path}")
+    private String uploadPath;
+
+    @PostMapping(value = "/signup")
+    public ResponseEntity<?> register(
+            @RequestPart("user") UserDTO userDTO,
+            @RequestPart(value = "profileImage", required = false) MultipartFile profileImg) {
 
         try {
             UserEntity user = UserEntity.builder()
@@ -34,17 +43,29 @@ public class UserController {
                     .password(encoder.encode(userDTO.getPassword()))
                     .build();
 
-            log.info("/auth/signup - {}", user);
+            log.info("/auth/signup - {}, file - {}", user, profileImg);
 
-            UserEntity registeredUser = userService.create(user);
+            if (profileImg != null) {
+                String originalFilename = profileImg.getOriginalFilename();
+                log.info("profileImg - {}", originalFilename);
 
-            UserDTO responseUserDTO = UserDTO.builder()
-                    .email(registeredUser.getEmail())
-                    .id(registeredUser.getId())
-                    .username(registeredUser.getUsername())
-                    .build();
+                String uniqueFileName = UUID.randomUUID().toString() + "_" + originalFilename;
+                File uploadFile = new File(uploadPath + "/" + uniqueFileName);
+                profileImg.transferTo(uploadFile);
+            }
 
-            return ResponseEntity.ok().body(responseUserDTO);
+//            UserEntity registeredUser = userService.create(user);
+//
+//            UserDTO responseUserDTO = UserDTO.builder()
+//                    .email(registeredUser.getEmail())
+//                    .id(registeredUser.getId())
+//                    .username(registeredUser.getUsername())
+//                    .build();
+//
+//            return ResponseEntity.ok().body(responseUserDTO);
+
+            return null;
+
         } catch (Exception e) {
             ResponseDTO<Object> responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
             return ResponseEntity.badRequest().body(responseDTO);
